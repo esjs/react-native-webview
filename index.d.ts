@@ -28,6 +28,11 @@ declare class WebView<P = {}> extends Component<WebViewProps & P> {
     stopLoading(): void;
 
     /**
+     * Trigger return all cookies inside current WebView
+     */
+    getAllCookies: () => void;
+
+    /**
      * Extra Native Component Config.
      */
     extraNativeComponentConfig: () => any;

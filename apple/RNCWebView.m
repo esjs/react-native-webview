@@ -1367,6 +1367,45 @@ static NSDictionary* customCertificatesForHost;
   return request;
 }
 
+- (void)getAllCookies:(void (^)(NSDictionary * _Nullable))complitionBlock
+{
+    if (@available(iOS 11.0, *)) {
+        [self.webView.configuration.websiteDataStore.httpCookieStore getAllCookies:^(NSArray<NSHTTPCookie *> *cookies) {
+            NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+            for (NSHTTPCookie *cookie in cookies)
+            {
+                [dict setObject:[self createCookieData:cookie] forKey:cookie.name];
+            }
+            complitionBlock(dict);
+        }];
+    } else {
+        complitionBlock(@{});
+    }
+}
+- (NSDictionary *)createCookieData:(NSHTTPCookie *)cookie
+{
+    NSMutableDictionary *cookieData = [NSMutableDictionary dictionary];
+    [cookieData setObject:cookie.name forKey:@"name"];
+    [cookieData setObject:cookie.value forKey:@"value"];
+    [cookieData setObject:cookie.path forKey:@"path"];
+    [cookieData setObject:cookie.domain forKey:@"domain"];
+    [cookieData setObject:[NSString stringWithFormat:@"%@", @(cookie.version)] forKey:@"version"];
+    if (![self isEmpty:cookie.expiresDate]) {
+        NSDateFormatter *formatter = [NSDateFormatter new];
+        [formatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"];
+        [cookieData setObject:[formatter stringFromDate:cookie.expiresDate] forKey:@"expires"];
+    }
+    [cookieData setObject:[NSNumber numberWithBool:(BOOL)cookie.secure] forKey:@"secure"];
+    [cookieData setObject:[NSNumber numberWithBool:(BOOL)cookie.HTTPOnly] forKey:@"httpOnly"];
+    return cookieData;
+}
+- (BOOL)isEmpty:(id)value
+{
+    return value == nil
+        || ([value respondsToSelector:@selector(length)] && [(NSData *)value length] == 0)
+        || ([value respondsToSelector:@selector(count)] && [(NSArray *)value count] == 0);
+}
+
 @end
 
 @implementation RNCWeakScriptMessageDelegate

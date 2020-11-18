@@ -41,6 +41,7 @@
 @property (nonatomic, assign) BOOL allowsInlineMediaPlayback;
 @property (nonatomic, assign) BOOL bounces;
 @property (nonatomic, assign) BOOL mediaPlaybackRequiresUserAction;
+@property (nonatomic, copy) RCTDirectEventBlock onCookiesRecieved;
 #if WEBKIT_IOS_10_APIS_AVAILABLE
 @property (nonatomic, assign) WKDataDetectorTypes dataDetectorTypes;
 #endif
@@ -80,6 +81,7 @@
 - (void)goBack;
 - (void)reload;
 - (void)stopLoading;
+- (void)getAllCookies:(void (^_Nullable)(NSDictionary *_Nullable))complitionBlock;
 #if !TARGET_OS_OSX
 - (void)addPullToRefreshControl;
 - (void)pullToRefresh:(UIRefreshControl *)refreshControl;

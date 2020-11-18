@@ -12,25 +12,33 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 
-type WebViewCommands = 'goForward' | 'goBack' | 'reload' | 'stopLoading' | 'postMessage' | 'injectJavaScript' | 'loadUrl' | 'requestFocus';
+type WebViewCommands =
+  | 'goForward'
+  | 'goBack'
+  | 'reload'
+  | 'stopLoading'
+  | 'postMessage'
+  | 'injectJavaScript'
+  | 'loadUrl'
+  | 'getAllCookies'
+  | 'requestFocus';
 
 type AndroidWebViewCommands = 'clearHistory' | 'clearCache' | 'clearFormData';
-
-
 
 interface RNCWebViewUIManager<Commands extends string> extends UIManagerStatic {
   getViewManagerConfig: (
     name: string,
   ) => {
-    Commands: {[key in Commands]: number};
+    Commands: { [key in Commands]: number };
   };
 }
 
-export type RNCWebViewUIManagerAndroid = RNCWebViewUIManager<WebViewCommands | AndroidWebViewCommands>
-export type RNCWebViewUIManagerIOS = RNCWebViewUIManager<WebViewCommands>
-export type RNCWebViewUIManagerMacOS = RNCWebViewUIManager<WebViewCommands>
-export type RNCWebViewUIManagerWindows = RNCWebViewUIManager<WebViewCommands>
-
+export type RNCWebViewUIManagerAndroid = RNCWebViewUIManager<
+  WebViewCommands | AndroidWebViewCommands
+>;
+export type RNCWebViewUIManagerIOS = RNCWebViewUIManager<WebViewCommands>;
+export type RNCWebViewUIManagerMacOS = RNCWebViewUIManager<WebViewCommands>;
+export type RNCWebViewUIManagerWindows = RNCWebViewUIManager<WebViewCommands>;
 
 type WebViewState = 'IDLE' | 'LOADING' | 'ERROR';
 
@@ -153,7 +161,9 @@ export type WebViewProgressEvent = NativeSyntheticEvent<
 
 export type WebViewNavigationEvent = NativeSyntheticEvent<WebViewNavigation>;
 
-export type ShouldStartLoadRequestEvent = NativeSyntheticEvent<ShouldStartLoadRequest>;
+export type ShouldStartLoadRequestEvent = NativeSyntheticEvent<
+  ShouldStartLoadRequest
+>;
 
 export type FileDownloadEvent = NativeSyntheticEvent<FileDownload>;
 
@@ -165,7 +175,9 @@ export type WebViewTerminatedEvent = NativeSyntheticEvent<WebViewNativeEvent>;
 
 export type WebViewHttpErrorEvent = NativeSyntheticEvent<WebViewHttpError>;
 
-export type WebViewRenderProcessGoneEvent = NativeSyntheticEvent<WebViewRenderProcessGoneDetail>;
+export type WebViewRenderProcessGoneEvent = NativeSyntheticEvent<
+  WebViewRenderProcessGoneDetail
+>;
 
 export type DataDetectorTypes =
   | 'phoneNumber'
@@ -180,7 +192,11 @@ export type DataDetectorTypes =
 
 export type OverScrollModeType = 'always' | 'content' | 'never';
 
-export type CacheMode = 'LOAD_DEFAULT' | 'LOAD_CACHE_ONLY' | 'LOAD_CACHE_ELSE_NETWORK' | 'LOAD_NO_CACHE';
+export type CacheMode =
+  | 'LOAD_DEFAULT'
+  | 'LOAD_CACHE_ONLY'
+  | 'LOAD_CACHE_ELSE_NETWORK'
+  | 'LOAD_NO_CACHE';
 
 export type AndroidLayerType = 'none' | 'software' | 'hardware';
 
@@ -211,6 +227,18 @@ export interface WebViewSourceUri {
   body?: string;
 }
 
+export interface WebViewCookies {
+  [key: string]: {
+    domain: string;
+    expires: string;
+    httpOnly: boolean;
+    name: string;
+    path: string;
+    secure: boolean;
+    value: string;
+    version: string;
+  };
+}
 export interface WebViewSourceHtml {
   /**
    * A static HTML page to display in the WebView.
@@ -232,7 +260,10 @@ export interface WebViewNativeConfig {
   /**
    * The native component used to render the WebView.
    */
-  component?: typeof NativeWebViewIOS | typeof NativeWebViewMacOS | typeof NativeWebViewAndroid;
+  component?:
+    | typeof NativeWebViewIOS
+    | typeof NativeWebViewMacOS
+    | typeof NativeWebViewAndroid;
   /**
    * Set props directly on the native component WebView. Enables custom props which the
    * original WebView doesn't pass through.
@@ -301,7 +332,11 @@ export interface AndroidNativeWebViewProps extends CommonNativeWebViewProps {
   readonly urlPrefixesForDefaultIntent?: string[];
 }
 
-export declare type ContentInsetAdjustmentBehavior = 'automatic' | 'scrollableAxes' | 'never' | 'always';
+export declare type ContentInsetAdjustmentBehavior =
+  | 'automatic'
+  | 'scrollableAxes'
+  | 'never'
+  | 'always';
 
 export declare type ContentMode = 'recommended' | 'mobile' | 'desktop';
 
@@ -347,7 +382,7 @@ export interface MacOSNativeWebViewProps extends CommonNativeWebViewProps {
 }
 
 export interface WindowsNativeWebViewProps extends CommonNativeWebViewProps {
-  testID?: string
+  testID?: string;
 }
 
 export interface IOSWebViewProps extends WebViewSharedProps {
@@ -547,14 +582,14 @@ export interface IOSWebViewProps extends WebViewSharedProps {
    * If `true` (default), loads the `injectedJavaScript` only into the main frame.
    * If `false`, loads it into all frames (e.g. iframes).
    * @platform ios
-  */
+   */
   injectedJavaScriptForMainFrameOnly?: boolean;
 
   /**
    * If `true` (default), loads the `injectedJavaScriptBeforeContentLoaded` only into the main frame.
    * If `false`, loads it into all frames (e.g. iframes).
    * @platform ios
-  */
+   */
   injectedJavaScriptBeforeContentLoadedForMainFrameOnly?: boolean;
 
   /**
@@ -563,7 +598,7 @@ export interface IOSWebViewProps extends WebViewSharedProps {
    * If `true`, sets `bounces` automatically to `true`
    * @platform ios
    *
-  */
+   */
   pullToRefreshEnabled?: boolean;
 
   /**
@@ -583,6 +618,12 @@ export interface IOSWebViewProps extends WebViewSharedProps {
    * If not provided, the default is to let the webview try to render the file.
    */
   onFileDownload?: (event: FileDownloadEvent) => void;
+  /**
+   * Callback function on cookies recieved after calling getAllCookies
+   *
+   * !!!IMPORTANT!!!! iOS only!!!!
+   */
+  onCookiesRecieved: (cookies: NativeSyntheticEvent<WebViewCookies>) => void;
 }
 
 export interface MacOSWebViewProps extends WebViewSharedProps {
@@ -770,7 +811,6 @@ export interface AndroidWebViewProps extends WebViewSharedProps {
    */
   geolocationEnabled?: boolean;
 
-
   /**
    * Boolean that sets whether JavaScript running in the context of a file
    * scheme URL should be allowed to access content from other file scheme URLs.
@@ -815,7 +855,7 @@ export interface AndroidWebViewProps extends WebViewSharedProps {
    */
   androidHardwareAccelerationDisabled?: boolean;
 
-    /**
+  /**
    * https://developer.android.com/reference/android/webkit/WebView#setLayerType(int,%20android.graphics.Paint)
    * Sets the layerType. Possible values are:
    *

@@ -45,6 +45,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_EXPORT_VIEW_PROPERTY(onFileDownload, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onCookiesRecieved, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
@@ -204,6 +205,24 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
       [view stopLoading];
     }
   }];
+}
+
+RCT_EXPORT_METHOD(getAllCookies:(nonnull NSNumber *)reactTag)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RNCWebView *> *viewRegistry)
+    {
+      RNCWebView *view = viewRegistry[reactTag];
+      if (![view isKindOfClass:[RNCWebView class]])
+      {
+        RCTLogError(@"Invalid view returned from registry, expecting RNCWebView, got: %@", view);
+      }
+      else
+      {
+          [view getAllCookies:^(NSDictionary *cookies) {
+              view.onCookiesRecieved(cookies);
+          }];
+      }
+    }];
 }
 
 #pragma mark - Exported synchronous methods
